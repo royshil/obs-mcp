@@ -8,6 +8,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     "obs-get-stream-status",
     "Get the current streaming status",
     {},
+    { readOnlyHint: true },
     async () => {
       try {
         const status = await client.sendRequest("GetStreamStatus");
@@ -38,6 +39,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     "obs-start-stream",
     "Start streaming in OBS",
     {},
+    { destructiveHint: false, idempotentHint: false },
     async () => {
       try {
         await client.sendRequest("StartStream");
@@ -68,6 +70,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     "obs-stop-stream",
     "Stop streaming in OBS",
     {},
+    { destructiveHint: false, idempotentHint: true },
     async () => {
       try {
         await client.sendRequest("StopStream");
@@ -98,6 +101,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     "obs-toggle-stream",
     "Toggle the streaming state in OBS",
     {},
+    { destructiveHint: false, idempotentHint: false },
     async () => {
       try {
         const response = await client.sendRequest("ToggleStream");
@@ -130,6 +134,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     {
       captionText: z.string().describe("Caption text to send")
     },
+    { destructiveHint: false, idempotentHint: false },
     async ({ captionText }) => {
       try {
         await client.sendRequest("SendStreamCaption", { captionText });

@@ -8,6 +8,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     "obs-get-filter-kind-list",
     "Gets an array of all available source filter kinds",
     {},
+    { readOnlyHint: true },
     async () => {
       try {
         const response = await client.sendRequest("GetSourceFilterKindList");
@@ -40,6 +41,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     {
       sourceName: z.string().describe("Name of the source")
     },
+    { readOnlyHint: true },
     async ({ sourceName }) => {
       try {
         const response = await client.sendRequest("GetSourceFilterList", { sourceName });
@@ -72,6 +74,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     {
       filterKind: z.string().describe("Filter kind to get the default settings for")
     },
+    { readOnlyHint: true },
     async ({ filterKind }) => {
       try {
         const response = await client.sendRequest("GetSourceFilterDefaultSettings", { filterKind });
@@ -107,6 +110,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
       filterKind: z.string().describe("The kind of filter to be created"),
       filterSettings: z.record(z.any()).optional().describe("Settings object to initialize the filter with")
     },
+    { destructiveHint: false, idempotentHint: false },
     async ({ sourceName, filterName, filterKind, filterSettings }) => {
       try {
         const requestParams: Record<string, any> = { sourceName, filterName, filterKind };
@@ -145,6 +149,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
       sourceName: z.string().describe("Name of the source the filter is on"),
       filterName: z.string().describe("Name of the filter to remove")
     },
+    { destructiveHint: true, idempotentHint: true },
     async ({ sourceName, filterName }) => {
       try {
         await client.sendRequest("RemoveSourceFilter", { sourceName, filterName });
@@ -179,6 +184,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
       filterName: z.string().describe("Current name of the filter"),
       newFilterName: z.string().describe("New name for the filter")
     },
+    { destructiveHint: false, idempotentHint: true },
     async ({ sourceName, filterName, newFilterName }) => {
       try {
         await client.sendRequest("SetSourceFilterName", { sourceName, filterName, newFilterName });
@@ -212,6 +218,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
       sourceName: z.string().describe("Name of the source"),
       filterName: z.string().describe("Name of the filter")
     },
+    { readOnlyHint: true },
     async ({ sourceName, filterName }) => {
       try {
         const response = await client.sendRequest("GetSourceFilter", { sourceName, filterName });
@@ -246,6 +253,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
       filterName: z.string().describe("Name of the filter"),
       filterIndex: z.number().min(0).describe("New index position of the filter")
     },
+    { destructiveHint: false, idempotentHint: true },
     async ({ sourceName, filterName, filterIndex }) => {
       try {
         await client.sendRequest("SetSourceFilterIndex", { sourceName, filterName, filterIndex });
@@ -281,6 +289,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
       filterSettings: z.record(z.any()).describe("Object of settings to apply"),
       overlay: z.boolean().optional().describe("True to apply settings on top of existing ones, False to reset to defaults first")
     },
+    { destructiveHint: false, idempotentHint: true },
     async ({ sourceName, filterName, filterSettings, overlay }) => {
       try {
         const requestParams: Record<string, any> = { sourceName, filterName, filterSettings };
@@ -320,6 +329,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
       filterName: z.string().describe("Name of the filter"),
       filterEnabled: z.boolean().describe("New enable state of the filter")
     },
+    { destructiveHint: false, idempotentHint: true },
     async ({ sourceName, filterName, filterEnabled }) => {
       try {
         await client.sendRequest("SetSourceFilterEnabled", { sourceName, filterName, filterEnabled });

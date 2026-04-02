@@ -14,4 +14,4 @@ describe('CLI entry (build/index.js)', () => {
     // Check owner execute bit
     expect(stat.mode & 0o100).toBeTruthy();
   });
-}); 
+});

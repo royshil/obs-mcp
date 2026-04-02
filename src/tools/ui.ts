@@ -8,6 +8,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     "obs-get-studio-mode",
     "Gets whether studio mode is enabled",
     {},
+    { readOnlyHint: true },
     async () => {
       try {
         const response = await client.sendRequest("GetStudioModeEnabled");
@@ -40,6 +41,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     {
       studioModeEnabled: z.boolean().describe("Whether to enable (true) or disable (false) Studio Mode")
     },
+    { destructiveHint: false, idempotentHint: true },
     async ({ studioModeEnabled }) => {
       try {
         await client.sendRequest("SetStudioModeEnabled", { studioModeEnabled });
@@ -73,10 +75,11 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
       inputName: z.string().optional().describe("Name of the input to open the dialog of"),
       inputUuid: z.string().optional().describe("UUID of the input to open the dialog of")
     },
+    { destructiveHint: false, idempotentHint: true },
     async ({ inputName, inputUuid }) => {
       try {
         const params: Record<string, any> = {};
-        
+
         if (inputName !== undefined) {
           params.inputName = inputName;
         }
@@ -115,10 +118,11 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
       inputName: z.string().optional().describe("Name of the input to open the dialog of"),
       inputUuid: z.string().optional().describe("UUID of the input to open the dialog of")
     },
+    { destructiveHint: false, idempotentHint: true },
     async ({ inputName, inputUuid }) => {
       try {
         const params: Record<string, any> = {};
-        
+
         if (inputName !== undefined) {
           params.inputName = inputName;
         }
@@ -157,10 +161,11 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
       inputName: z.string().optional().describe("Name of the input to open the dialog of"),
       inputUuid: z.string().optional().describe("UUID of the input to open the dialog of")
     },
+    { destructiveHint: false, idempotentHint: true },
     async ({ inputName, inputUuid }) => {
       try {
         const params: Record<string, any> = {};
-        
+
         if (inputName !== undefined) {
           params.inputName = inputName;
         }
@@ -196,6 +201,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     "obs-get-monitor-list",
     "Gets a list of connected monitors and information about them",
     {},
+    { readOnlyHint: true },
     async () => {
       try {
         const response = await client.sendRequest("GetMonitorList");
@@ -234,6 +240,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
       monitorIndex: z.number().optional().describe("Monitor index, use -1 for windowed mode"),
       projectorGeometry: z.string().optional().describe("Size/Position data for a windowed projector")
     },
+    { destructiveHint: false, idempotentHint: true },
     async ({ videoMixType, monitorIndex, projectorGeometry }) => {
       try {
         const requestParams: Record<string, any> = { videoMixType };
@@ -277,6 +284,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
       monitorIndex: z.number().optional().describe("Monitor index, use -1 for windowed mode"),
       projectorGeometry: z.string().optional().describe("Size/Position data for a windowed projector")
     },
+    { destructiveHint: false, idempotentHint: true },
     async ({ sourceName, sourceUuid, monitorIndex, projectorGeometry }) => {
       try {
         const requestParams: Record<string, any> = {};

@@ -1,6 +1,9 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { OBSWebSocketClient } from "../client.js";
 import { z } from "zod";
+import { createRequire } from "module";
+
+const { version } = createRequire(import.meta.url)("../../package.json");
 
 export async function initialize(server: McpServer, client: OBSWebSocketClient): Promise<void> {
   // Get server status
@@ -8,6 +11,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     "obs-get-status",
     "Get the current status of the OBS MCP server and OBS connection",
     {},
+    { readOnlyHint: true },
     async () => {
       const status = client.getConnectionStatus();
       const obsConnected = client.isConnected();
@@ -15,7 +19,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
       const statusInfo = {
         server: {
           name: "obs-mcp",
-          version: "1.0.1",
+          version,
           status: "running"
         },
         obs: {
@@ -43,6 +47,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     "obs-get-version",
     "Get OBS Studio version information",
     {},
+    { readOnlyHint: true },
     async () => {
       if (!client.isConnected()) {
         return {
@@ -85,6 +90,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     "obs-test-connection",
     "Test the connection to OBS WebSocket",
     {},
+    { readOnlyHint: true },
     async () => {
       if (!client.isConnected()) {
         return {
@@ -128,6 +134,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     "obs-get-stats",
     "Gets statistics about OBS, obs-websocket, and the current session",
     {},
+    { readOnlyHint: true },
     async () => {
       try {
         const stats = await client.sendRequest("GetStats");
@@ -160,6 +167,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     {
       eventData: z.record(z.any()).describe("Data payload to emit to all receivers")
     },
+    { destructiveHint: false, idempotentHint: false },
     async ({ eventData }) => {
       try {
         await client.sendRequest("BroadcastCustomEvent", { eventData });
@@ -194,6 +202,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
       requestType: z.string().describe("The request type to call"),
       requestData: z.record(z.any()).optional().describe("Object containing appropriate request data")
     },
+    { destructiveHint: false, idempotentHint: false },
     async ({ vendorName, requestType, requestData }) => {
       try {
         const params: Record<string, any> = {
@@ -233,6 +242,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     "obs-get-hotkey-list",
     "Gets an array of all hotkey names in OBS",
     {},
+    { readOnlyHint: true },
     async () => {
       try {
         const hotkeyList = await client.sendRequest("GetHotkeyList");
@@ -266,6 +276,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
       hotkeyName: z.string().describe("Name of the hotkey to trigger"),
       contextName: z.string().optional().describe("Name of context of the hotkey to trigger")
     },
+    { destructiveHint: false, idempotentHint: false },
     async ({ hotkeyName, contextName }) => {
       try {
         const params: Record<string, any> = { hotkeyName };
@@ -310,6 +321,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
         command: z.boolean().optional().describe("Press CMD (Mac)")
       }).optional().describe("Object containing key modifiers to apply")
     },
+    { destructiveHint: false, idempotentHint: false },
     async ({ keyId, keyModifiers }) => {
       try {
         const params: Record<string, any> = {};
@@ -353,6 +365,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
       sleepMillis: z.number().optional().describe("Number of milliseconds to sleep for"),
       sleepFrames: z.number().optional().describe("Number of frames to sleep for")
     },
+    { readOnlyHint: true },
     async ({ sleepMillis, sleepFrames }) => {
       try {
         const params: Record<string, any> = {};

@@ -8,6 +8,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     "obs-get-scene-list",
     "Get a list of scenes in OBS",
     {},
+    { readOnlyHint: true },
     async () => {
       try {
         const sceneList = await client.sendRequest("GetSceneList");
@@ -38,6 +39,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     "obs-get-current-scene",
     "Get the current active scene in OBS",
     {},
+    { readOnlyHint: true },
     async () => {
       try {
         const currentScene = await client.sendRequest("GetCurrentProgramScene");
@@ -70,6 +72,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     {
       sceneName: z.string().describe("The name of the scene to set as current")
     },
+    { destructiveHint: false, idempotentHint: true },
     async ({ sceneName }) => {
       try {
         await client.sendRequest("SetCurrentProgramScene", { sceneName });
@@ -100,6 +103,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     "obs-get-preview-scene",
     "Get the current preview scene in OBS Studio Mode",
     {},
+    { readOnlyHint: true },
     async () => {
       try {
         const previewScene = await client.sendRequest("GetCurrentPreviewScene");
@@ -132,6 +136,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     {
       sceneName: z.string().describe("The name of the scene to set as preview")
     },
+    { destructiveHint: false, idempotentHint: true },
     async ({ sceneName }) => {
       try {
         await client.sendRequest("SetCurrentPreviewScene", { sceneName });
@@ -164,6 +169,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     {
       sceneName: z.string().describe("The name for the new scene")
     },
+    { destructiveHint: false, idempotentHint: false },
     async ({ sceneName }) => {
       try {
         await client.sendRequest("CreateScene", { sceneName });
@@ -196,6 +202,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     {
       sceneName: z.string().describe("The name of the scene to remove")
     },
+    { destructiveHint: true, idempotentHint: true },
     async ({ sceneName }) => {
       try {
         await client.sendRequest("RemoveScene", { sceneName });
@@ -226,6 +233,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     "obs-trigger-studio-transition",
     "Trigger a transition from preview to program scene in Studio Mode",
     {},
+    { destructiveHint: false, idempotentHint: false },
     async () => {
       try {
         await client.sendRequest("TriggerStudioModeTransition");

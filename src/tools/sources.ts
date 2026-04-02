@@ -11,6 +11,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
       sourceName: z.string().optional().describe("Name of the source to get the active state of"),
       sourceUuid: z.string().optional().describe("UUID of the source to get the active state of")
     },
+    { readOnlyHint: true },
     async ({ sourceName, sourceUuid }) => {
       try {
         const response = await client.sendRequest("GetSourceActive", {
@@ -52,6 +53,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
       imageHeight: z.number().optional().describe("Height to scale the screenshot to"),
       imageCompressionQuality: z.number().optional().describe("Compression quality to use (0-100, -1 for default)")
     },
+    { readOnlyHint: true },
     async ({ sourceName, sourceUuid, imageFormat, imageWidth, imageHeight, imageCompressionQuality }) => {
       try {
         const response = await client.sendRequest("GetSourceScreenshot", {
@@ -98,6 +100,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
       imageHeight: z.number().optional().describe("Height to scale the screenshot to"),
       imageCompressionQuality: z.number().optional().describe("Compression quality to use (0-100, -1 for default)")
     },
+    { destructiveHint: false, idempotentHint: false },
     async ({ sourceName, sourceUuid, imageFormat, imageFilePath, imageWidth, imageHeight, imageCompressionQuality }) => {
       try {
         await client.sendRequest("SaveSourceScreenshot", {

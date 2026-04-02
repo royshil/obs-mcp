@@ -42,6 +42,11 @@ export OBS_WEBSOCKET_PASSWORD="your_password_here"
 
 4. Use Claude to control your OBS!
 
+## Installation via .mcpb package
+
+You can also install OBS MCP as a `.mcpb` package directly in Claude Desktop — no manual config needed.
+Download the latest `obs-studio.mcpb` from the [releases page](https://github.com/royshil/obs-mcp/releases) and open it with Claude Desktop.
+
 ## Development
 
 If you want to run the server locally using the code in this git repo, you can do the following:
@@ -69,6 +74,15 @@ Then configure Claude desktop:
   }
 }
 ```
+
+### Building the .mcpb package
+
+```bash
+npm run build
+npm run pack  # → dist/obs-studio.mcpb
+```
+
+`npm run pack` automatically collects package version and the full tool list from the built server and injects it into `manifest.json` before packing.
 
 ## Available Tools
 

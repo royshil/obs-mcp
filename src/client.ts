@@ -1,5 +1,5 @@
 import WebSocket from 'ws';
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 import { EventEmitter } from 'events';
 
 const logger = {

@@ -11,6 +11,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
       realm: z.string().describe("The data realm to select. OBS_WEBSOCKET_DATA_REALM_GLOBAL or OBS_WEBSOCKET_DATA_REALM_PROFILE"),
       slotName: z.string().describe("The name of the slot to retrieve data from")
     },
+    { readOnlyHint: true },
     async ({ realm, slotName }) => {
       try {
         const response = await client.sendRequest("GetPersistentData", { realm, slotName });
@@ -45,6 +46,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
       slotName: z.string().describe("The name of the slot to set data for"),
       slotValue: z.any().describe("The value to apply to the slot")
     },
+    { destructiveHint: false, idempotentHint: true },
     async ({ realm, slotName, slotValue }) => {
       try {
         await client.sendRequest("SetPersistentData", { realm, slotName, slotValue });
@@ -75,6 +77,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     "obs-get-scene-collection-list",
     "Gets an array of all scene collections",
     {},
+    { readOnlyHint: true },
     async () => {
       try {
         const response = await client.sendRequest("GetSceneCollectionList");
@@ -107,6 +110,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     {
       sceneCollectionName: z.string().describe("Name of the scene collection to switch to")
     },
+    { destructiveHint: false, idempotentHint: true },
     async ({ sceneCollectionName }) => {
       try {
         await client.sendRequest("SetCurrentSceneCollection", { sceneCollectionName });
@@ -139,6 +143,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     {
       sceneCollectionName: z.string().describe("Name for the new scene collection")
     },
+    { destructiveHint: false, idempotentHint: false },
     async ({ sceneCollectionName }) => {
       try {
         await client.sendRequest("CreateSceneCollection", { sceneCollectionName });
@@ -169,6 +174,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     "obs-get-profile-list",
     "Gets an array of all profiles",
     {},
+    { readOnlyHint: true },
     async () => {
       try {
         const response = await client.sendRequest("GetProfileList");
@@ -201,6 +207,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     {
       profileName: z.string().describe("Name of the profile to switch to")
     },
+    { destructiveHint: false, idempotentHint: true },
     async ({ profileName }) => {
       try {
         await client.sendRequest("SetCurrentProfile", { profileName });
@@ -233,6 +240,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     {
       profileName: z.string().describe("Name for the new profile")
     },
+    { destructiveHint: false, idempotentHint: false },
     async ({ profileName }) => {
       try {
         await client.sendRequest("CreateProfile", { profileName });
@@ -265,6 +273,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     {
       profileName: z.string().describe("Name of the profile to remove")
     },
+    { destructiveHint: true, idempotentHint: true },
     async ({ profileName }) => {
       try {
         await client.sendRequest("RemoveProfile", { profileName });
@@ -298,6 +307,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
       parameterCategory: z.string().describe("Category of the parameter to get"),
       parameterName: z.string().describe("Name of the parameter to get")
     },
+    { readOnlyHint: true },
     async ({ parameterCategory, parameterName }) => {
       try {
         const response = await client.sendRequest("GetProfileParameter", { parameterCategory, parameterName });
@@ -332,6 +342,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
       parameterName: z.string().describe("Name of the parameter to set"),
       parameterValue: z.string().nullable().describe("Value of the parameter to set. Use null to delete")
     },
+    { destructiveHint: false, idempotentHint: true },
     async ({ parameterCategory, parameterName, parameterValue }) => {
       try {
         await client.sendRequest("SetProfileParameter", { parameterCategory, parameterName, parameterValue });
@@ -362,6 +373,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     "obs-get-video-settings",
     "Gets the current video settings",
     {},
+    { readOnlyHint: true },
     async () => {
       try {
         const response = await client.sendRequest("GetVideoSettings");
@@ -399,6 +411,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
       outputWidth: z.number().min(1).max(4096).optional().describe("Width of the output resolution in pixels"),
       outputHeight: z.number().min(1).max(4096).optional().describe("Height of the output resolution in pixels")
     },
+    { destructiveHint: false, idempotentHint: true },
     async (params) => {
       try {
         // Only include parameters that were provided
@@ -438,6 +451,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     "obs-get-stream-service-settings",
     "Gets the current stream service settings",
     {},
+    { readOnlyHint: true },
     async () => {
       try {
         const response = await client.sendRequest("GetStreamServiceSettings");
@@ -471,6 +485,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
       streamServiceType: z.string().describe("Type of stream service to apply. Example: rtmp_common or rtmp_custom"),
       streamServiceSettings: z.record(z.any()).describe("Settings to apply to the service")
     },
+    { destructiveHint: false, idempotentHint: true },
     async ({ streamServiceType, streamServiceSettings }) => {
       try {
         await client.sendRequest("SetStreamServiceSettings", { streamServiceType, streamServiceSettings });
@@ -501,6 +516,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     "obs-get-record-directory",
     "Gets the current directory that the record output is set to",
     {},
+    { readOnlyHint: true },
     async () => {
       try {
         const response = await client.sendRequest("GetRecordDirectory");
@@ -533,6 +549,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     {
       recordDirectory: z.string().describe("Output directory")
     },
+    { destructiveHint: false, idempotentHint: true },
     async ({ recordDirectory }) => {
       try {
         await client.sendRequest("SetRecordDirectory", { recordDirectory });

@@ -8,6 +8,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     "obs-get-virtual-cam-status",
     "Gets the status of the virtualcam output",
     {},
+    { readOnlyHint: true },
     async () => {
       try {
         const response = await client.sendRequest("GetVirtualCamStatus");
@@ -38,6 +39,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     "obs-toggle-virtual-cam",
     "Toggles the state of the virtualcam output",
     {},
+    { destructiveHint: false, idempotentHint: false },
     async () => {
       try {
         const response = await client.sendRequest("ToggleVirtualCam");
@@ -68,6 +70,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     "obs-start-virtual-cam",
     "Starts the virtualcam output",
     {},
+    { destructiveHint: false, idempotentHint: false },
     async () => {
       try {
         await client.sendRequest("StartVirtualCam");
@@ -98,6 +101,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     "obs-stop-virtual-cam",
     "Stops the virtualcam output",
     {},
+    { destructiveHint: false, idempotentHint: true },
     async () => {
       try {
         await client.sendRequest("StopVirtualCam");
@@ -128,6 +132,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     "obs-get-replay-buffer-status",
     "Gets the status of the replay buffer output",
     {},
+    { readOnlyHint: true },
     async () => {
       try {
         const response = await client.sendRequest("GetReplayBufferStatus");
@@ -158,6 +163,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     "obs-toggle-replay-buffer",
     "Toggles the state of the replay buffer output",
     {},
+    { destructiveHint: false, idempotentHint: false },
     async () => {
       try {
         const response = await client.sendRequest("ToggleReplayBuffer");
@@ -188,6 +194,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     "obs-start-replay-buffer",
     "Starts the replay buffer output",
     {},
+    { destructiveHint: false, idempotentHint: false },
     async () => {
       try {
         await client.sendRequest("StartReplayBuffer");
@@ -218,6 +225,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     "obs-stop-replay-buffer",
     "Stops the replay buffer output",
     {},
+    { destructiveHint: false, idempotentHint: true },
     async () => {
       try {
         await client.sendRequest("StopReplayBuffer");
@@ -248,6 +256,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     "obs-save-replay-buffer",
     "Saves the contents of the replay buffer output",
     {},
+    { destructiveHint: false, idempotentHint: false },
     async () => {
       try {
         await client.sendRequest("SaveReplayBuffer");
@@ -278,6 +287,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     "obs-get-last-replay-buffer-replay",
     "Gets the filename of the last replay buffer save file",
     {},
+    { readOnlyHint: true },
     async () => {
       try {
         const response = await client.sendRequest("GetLastReplayBufferReplay");
@@ -308,6 +318,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     "obs-get-output-list",
     "Gets the list of available outputs",
     {},
+    { readOnlyHint: true },
     async () => {
       try {
         const response = await client.sendRequest("GetOutputList");
@@ -340,6 +351,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     {
       outputName: z.string().describe("Output name")
     },
+    { readOnlyHint: true },
     async ({ outputName }) => {
       try {
         const response = await client.sendRequest("GetOutputStatus", { outputName });
@@ -372,6 +384,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     {
       outputName: z.string().describe("Output name")
     },
+    { destructiveHint: false, idempotentHint: false },
     async ({ outputName }) => {
       try {
         const response = await client.sendRequest("ToggleOutput", { outputName });
@@ -404,6 +417,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     {
       outputName: z.string().describe("Output name")
     },
+    { destructiveHint: false, idempotentHint: false },
     async ({ outputName }) => {
       try {
         await client.sendRequest("StartOutput", { outputName });
@@ -436,6 +450,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     {
       outputName: z.string().describe("Output name")
     },
+    { destructiveHint: false, idempotentHint: true },
     async ({ outputName }) => {
       try {
         await client.sendRequest("StopOutput", { outputName });
@@ -468,6 +483,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     {
       outputName: z.string().describe("Output name")
     },
+    { readOnlyHint: true },
     async ({ outputName }) => {
       try {
         const response = await client.sendRequest("GetOutputSettings", { outputName });
@@ -501,6 +517,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
       outputName: z.string().describe("Output name"),
       outputSettings: z.record(z.any()).describe("Output settings")
     },
+    { destructiveHint: false, idempotentHint: true },
     async ({ outputName, outputSettings }) => {
       try {
         await client.sendRequest("SetOutputSettings", { outputName, outputSettings });

@@ -10,6 +10,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     {
       inputName: z.string().describe("Name of the media input")
     },
+    { readOnlyHint: true },
     async ({ inputName }) => {
       try {
         const response = await client.sendRequest("GetMediaInputStatus", { inputName });
@@ -43,6 +44,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
       inputName: z.string().describe("Name of the media input"),
       mediaCursor: z.number().min(0).describe("New cursor position to set (in milliseconds)")
     },
+    { destructiveHint: false, idempotentHint: true },
     async ({ inputName, mediaCursor }) => {
       try {
         await client.sendRequest("SetMediaInputCursor", { inputName, mediaCursor });
@@ -76,6 +78,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
       inputName: z.string().describe("Name of the media input"),
       mediaCursorOffset: z.number().describe("Value to offset the current cursor position by (in milliseconds)")
     },
+    { destructiveHint: false, idempotentHint: false },
     async ({ inputName, mediaCursorOffset }) => {
       try {
         await client.sendRequest("OffsetMediaInputCursor", { inputName, mediaCursorOffset });
@@ -116,6 +119,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
         "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_PREVIOUS"
       ]).describe("Action to trigger (PLAY, PAUSE, STOP, RESTART, NEXT, PREVIOUS)")
     },
+    { destructiveHint: false, idempotentHint: false },
     async ({ inputName, mediaAction }) => {
       try {
         await client.sendRequest("TriggerMediaInputAction", { inputName, mediaAction });

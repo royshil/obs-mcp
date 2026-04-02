@@ -4,6 +4,9 @@ node_modules/
 # Build output
 build/
 dist/
+*.mcpb
+*.dxt
+.pack-*
 
 # Environment variables
 .env

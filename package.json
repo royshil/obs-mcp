@@ -1,6 +1,6 @@
 {
   "name": "obs-mcp",
-  "version": "1.0.1",
+  "version": "1.1.1",
   "description": "MCP server for OBS Studio",
   "type": "module",
   "bin": {
@@ -10,19 +10,19 @@
   "scripts": {
     "build": "tsc && chmod 755 build/index.js",
     "start": "node build/index.js",
+    "pack": "node scripts/pack.mjs",
     "test": "vitest run"
   },
   "files": [
     "build"
   ],
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.0",
-    "crypto-js": "^4.2.0",
+    "@modelcontextprotocol/sdk": "^1.29.0",
     "ws": "^8.16.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@types/crypto-js": "^4.2.2",
+    "@anthropic-ai/mcpb": "2.1.2",
     "@types/node": "^20.11.25",
     "@types/ws": "^8.5.10",
     "typescript": "^5.4.2",

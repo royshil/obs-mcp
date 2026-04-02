@@ -10,6 +10,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
     {
       sceneName: z.string().describe("The name of the scene to get items from")
     },
+    { readOnlyHint: true },
     async ({ sceneName }) => {
       try {
         const sceneItems = await client.sendRequest("GetSceneItemList", { sceneName });
@@ -44,6 +45,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
       sourceName: z.string().describe("The name of the source to add"),
       enabled: z.boolean().optional().describe("Whether the scene item is enabled/visible (default: true)")
     },
+    { destructiveHint: false, idempotentHint: false },
     async ({ sceneName, sourceName, enabled = true }) => {
       try {
         const response = await client.sendRequest("CreateSceneItem", {
@@ -82,6 +84,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
       sceneName: z.string().describe("The scene to remove the item from"),
       sceneItemId: z.number().describe("The ID of the scene item to remove")
     },
+    { destructiveHint: true, idempotentHint: true },
     async ({ sceneName, sceneItemId }) => {
       try {
         await client.sendRequest("RemoveSceneItem", { sceneName, sceneItemId });
@@ -117,6 +120,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
       sceneItemId: z.number().describe("The ID of the scene item"),
       enabled: z.boolean().describe("Whether to show (true) or hide (false) the item")
     },
+    { destructiveHint: false, idempotentHint: true },
     async ({ sceneName, sceneItemId, enabled }) => {
       try {
         await client.sendRequest("SetSceneItemEnabled", {
@@ -155,6 +159,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
       sceneName: z.string().describe("The scene the item is in"),
       sceneItemId: z.number().describe("The ID of the scene item")
     },
+    { readOnlyHint: true },
     async ({ sceneName, sceneItemId }) => {
       try {
         const response = await client.sendRequest("GetSceneItemTransform", { sceneName, sceneItemId });
@@ -197,6 +202,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
       cropLeft: z.number().optional().describe("The number of pixels cropped off the left"),
       cropRight: z.number().optional().describe("The number of pixels cropped off the right")
     },
+    { destructiveHint: false, idempotentHint: true },
     async (params) => {
       try {
         const { sceneName, sceneItemId, ...transformParams } = params;
@@ -262,6 +268,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
       sceneName: z.string().describe("The scene name to search in"),
       sourceName: z.string().describe("The source name to find")
     },
+    { readOnlyHint: true },
     async ({ sceneName, sourceName }) => {
       try {
         const response = await client.sendRequest("GetSceneItemId", {
