@@ -4,11 +4,15 @@ import { z } from "zod";
 
 export async function initialize(server: McpServer, client: OBSWebSocketClient): Promise<void> {
   // GetSceneItemList tool
-  server.tool(
+  server.registerTool(
     "obs-get-scene-items",
-    "Get a list of all scene items in a scene",
     {
-      sceneName: z.string().describe("The name of the scene to get items from")
+      title: "Get Scene Items",
+      description: "Get a list of all scene items in a scene",
+      inputSchema: {
+        sceneName: z.string().describe("The name of the scene to get items from")
+      },
+      annotations: { readOnlyHint: true },
     },
     async ({ sceneName }) => {
       try {
@@ -36,13 +40,17 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // CreateSceneItem tool
-  server.tool(
+  server.registerTool(
     "obs-create-scene-item",
-    "Create a scene item for a source in a scene",
     {
-      sceneName: z.string().describe("The scene to add the source to"),
-      sourceName: z.string().describe("The name of the source to add"),
-      enabled: z.boolean().optional().describe("Whether the scene item is enabled/visible (default: true)")
+      title: "Create Scene Item",
+      description: "Create a scene item for a source in a scene",
+      inputSchema: {
+        sceneName: z.string().describe("The scene to add the source to"),
+        sourceName: z.string().describe("The name of the source to add"),
+        enabled: z.boolean().optional().describe("Whether the scene item is enabled/visible (default: true)")
+      },
+      annotations: { destructiveHint: false, idempotentHint: false },
     },
     async ({ sceneName, sourceName, enabled = true }) => {
       try {
@@ -75,12 +83,16 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // RemoveSceneItem tool
-  server.tool(
+  server.registerTool(
     "obs-remove-scene-item",
-    "Remove a scene item from a scene",
     {
-      sceneName: z.string().describe("The scene to remove the item from"),
-      sceneItemId: z.number().describe("The ID of the scene item to remove")
+      title: "Remove Scene Item",
+      description: "Remove a scene item from a scene",
+      inputSchema: {
+        sceneName: z.string().describe("The scene to remove the item from"),
+        sceneItemId: z.number().describe("The ID of the scene item to remove")
+      },
+      annotations: { destructiveHint: true, idempotentHint: true },
     },
     async ({ sceneName, sceneItemId }) => {
       try {
@@ -109,13 +121,17 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // SetSceneItemEnabled tool
-  server.tool(
+  server.registerTool(
     "obs-set-scene-item-enabled",
-    "Show or hide a scene item",
     {
-      sceneName: z.string().describe("The scene that the source belongs to"),
-      sceneItemId: z.number().describe("The ID of the scene item"),
-      enabled: z.boolean().describe("Whether to show (true) or hide (false) the item")
+      title: "Set Scene Item Visibility",
+      description: "Show or hide a scene item",
+      inputSchema: {
+        sceneName: z.string().describe("The scene that the source belongs to"),
+        sceneItemId: z.number().describe("The ID of the scene item"),
+        enabled: z.boolean().describe("Whether to show (true) or hide (false) the item")
+      },
+      annotations: { destructiveHint: false, idempotentHint: true },
     },
     async ({ sceneName, sceneItemId, enabled }) => {
       try {
@@ -148,12 +164,16 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // GetSceneItemTransform tool
-  server.tool(
+  server.registerTool(
     "obs-get-scene-item-transform",
-    "Get the position, rotation, scale, or crop of a scene item",
     {
-      sceneName: z.string().describe("The scene the item is in"),
-      sceneItemId: z.number().describe("The ID of the scene item")
+      title: "Get Scene Item Transform",
+      description: "Get the position, rotation, scale, or crop of a scene item",
+      inputSchema: {
+        sceneName: z.string().describe("The scene the item is in"),
+        sceneItemId: z.number().describe("The ID of the scene item")
+      },
+      annotations: { readOnlyHint: true },
     },
     async ({ sceneName, sceneItemId }) => {
       try {
@@ -181,21 +201,25 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // SetSceneItemTransform tool
-  server.tool(
+  server.registerTool(
     "obs-set-scene-item-transform",
-    "Set the position, rotation, scale, or crop of a scene item",
     {
-      sceneName: z.string().describe("The scene the item is in"),
-      sceneItemId: z.number().describe("The ID of the scene item"),
-      positionX: z.number().optional().describe("The x position"),
-      positionY: z.number().optional().describe("The y position"),
-      rotation: z.number().optional().describe("The rotation in degrees"),
-      scaleX: z.number().optional().describe("The x scale factor"),
-      scaleY: z.number().optional().describe("The y scale factor"),
-      cropTop: z.number().optional().describe("The number of pixels cropped off the top"),
-      cropBottom: z.number().optional().describe("The number of pixels cropped off the bottom"),
-      cropLeft: z.number().optional().describe("The number of pixels cropped off the left"),
-      cropRight: z.number().optional().describe("The number of pixels cropped off the right")
+      title: "Set Scene Item Transform",
+      description: "Set the position, rotation, scale, or crop of a scene item",
+      inputSchema: {
+        sceneName: z.string().describe("The scene the item is in"),
+        sceneItemId: z.number().describe("The ID of the scene item"),
+        positionX: z.number().optional().describe("The x position"),
+        positionY: z.number().optional().describe("The y position"),
+        rotation: z.number().optional().describe("The rotation in degrees"),
+        scaleX: z.number().optional().describe("The x scale factor"),
+        scaleY: z.number().optional().describe("The y scale factor"),
+        cropTop: z.number().optional().describe("The number of pixels cropped off the top"),
+        cropBottom: z.number().optional().describe("The number of pixels cropped off the bottom"),
+        cropLeft: z.number().optional().describe("The number of pixels cropped off the left"),
+        cropRight: z.number().optional().describe("The number of pixels cropped off the right")
+      },
+      annotations: { destructiveHint: false, idempotentHint: true },
     },
     async (params) => {
       try {
@@ -255,12 +279,16 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // GetSceneItemIdByName tool
-  server.tool(
+  server.registerTool(
     "obs-get-scene-item-id",
-    "Get the ID of a scene item by its source name",
     {
-      sceneName: z.string().describe("The scene name to search in"),
-      sourceName: z.string().describe("The source name to find")
+      title: "Get Scene Item ID",
+      description: "Get the ID of a scene item by its source name",
+      inputSchema: {
+        sceneName: z.string().describe("The scene name to search in"),
+        sourceName: z.string().describe("The source name to find")
+      },
+      annotations: { readOnlyHint: true },
     },
     async ({ sceneName, sourceName }) => {
       try {

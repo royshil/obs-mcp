@@ -4,10 +4,13 @@ import { z } from "zod";
 
 export async function initialize(server: McpServer, client: OBSWebSocketClient): Promise<void> {
   // GetSourceFilterKindList tool
-  server.tool(
+  server.registerTool(
     "obs-get-filter-kind-list",
-    "Gets an array of all available source filter kinds",
-    {},
+    {
+      title: "Get Filter Kind List",
+      description: "Gets an array of all available source filter kinds",
+      annotations: { readOnlyHint: true },
+    },
     async () => {
       try {
         const response = await client.sendRequest("GetSourceFilterKindList");
@@ -34,11 +37,15 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // GetSourceFilterList tool
-  server.tool(
+  server.registerTool(
     "obs-get-source-filter-list",
-    "Gets an array of all of a source's filters",
     {
-      sourceName: z.string().describe("Name of the source")
+      title: "Get Source Filter List",
+      description: "Gets an array of all of a source's filters",
+      inputSchema: {
+        sourceName: z.string().describe("Name of the source")
+      },
+      annotations: { readOnlyHint: true },
     },
     async ({ sourceName }) => {
       try {
@@ -66,11 +73,15 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // GetSourceFilterDefaultSettings tool
-  server.tool(
+  server.registerTool(
     "obs-get-filter-default-settings",
-    "Gets the default settings for a filter kind",
     {
-      filterKind: z.string().describe("Filter kind to get the default settings for")
+      title: "Get Filter Default Settings",
+      description: "Gets the default settings for a filter kind",
+      inputSchema: {
+        filterKind: z.string().describe("Filter kind to get the default settings for")
+      },
+      annotations: { readOnlyHint: true },
     },
     async ({ filterKind }) => {
       try {
@@ -98,14 +109,18 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // CreateSourceFilter tool
-  server.tool(
+  server.registerTool(
     "obs-create-source-filter",
-    "Creates a new filter, adding it to the specified source",
     {
-      sourceName: z.string().describe("Name of the source to add the filter to"),
-      filterName: z.string().describe("Name of the new filter to be created"),
-      filterKind: z.string().describe("The kind of filter to be created"),
-      filterSettings: z.record(z.any()).optional().describe("Settings object to initialize the filter with")
+      title: "Create Source Filter",
+      description: "Creates a new filter, adding it to the specified source",
+      inputSchema: {
+        sourceName: z.string().describe("Name of the source to add the filter to"),
+        filterName: z.string().describe("Name of the new filter to be created"),
+        filterKind: z.string().describe("The kind of filter to be created"),
+        filterSettings: z.record(z.any()).optional().describe("Settings object to initialize the filter with")
+      },
+      annotations: { destructiveHint: false, idempotentHint: false },
     },
     async ({ sourceName, filterName, filterKind, filterSettings }) => {
       try {
@@ -138,12 +153,16 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // RemoveSourceFilter tool
-  server.tool(
+  server.registerTool(
     "obs-remove-source-filter",
-    "Removes a filter from a source",
     {
-      sourceName: z.string().describe("Name of the source the filter is on"),
-      filterName: z.string().describe("Name of the filter to remove")
+      title: "Remove Source Filter",
+      description: "Removes a filter from a source",
+      inputSchema: {
+        sourceName: z.string().describe("Name of the source the filter is on"),
+        filterName: z.string().describe("Name of the filter to remove")
+      },
+      annotations: { destructiveHint: true, idempotentHint: true },
     },
     async ({ sourceName, filterName }) => {
       try {
@@ -171,13 +190,17 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // SetSourceFilterName tool
-  server.tool(
+  server.registerTool(
     "obs-set-source-filter-name",
-    "Sets the name of a source filter (rename)",
     {
-      sourceName: z.string().describe("Name of the source the filter is on"),
-      filterName: z.string().describe("Current name of the filter"),
-      newFilterName: z.string().describe("New name for the filter")
+      title: "Rename Source Filter",
+      description: "Sets the name of a source filter (rename)",
+      inputSchema: {
+        sourceName: z.string().describe("Name of the source the filter is on"),
+        filterName: z.string().describe("Current name of the filter"),
+        newFilterName: z.string().describe("New name for the filter")
+      },
+      annotations: { destructiveHint: false, idempotentHint: true },
     },
     async ({ sourceName, filterName, newFilterName }) => {
       try {
@@ -205,12 +228,16 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // GetSourceFilter tool
-  server.tool(
+  server.registerTool(
     "obs-get-source-filter",
-    "Gets the info for a specific source filter",
     {
-      sourceName: z.string().describe("Name of the source"),
-      filterName: z.string().describe("Name of the filter")
+      title: "Get Source Filter",
+      description: "Gets the info for a specific source filter",
+      inputSchema: {
+        sourceName: z.string().describe("Name of the source"),
+        filterName: z.string().describe("Name of the filter")
+      },
+      annotations: { readOnlyHint: true },
     },
     async ({ sourceName, filterName }) => {
       try {
@@ -238,13 +265,17 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // SetSourceFilterIndex tool
-  server.tool(
+  server.registerTool(
     "obs-set-source-filter-index",
-    "Sets the index position of a filter on a source",
     {
-      sourceName: z.string().describe("Name of the source the filter is on"),
-      filterName: z.string().describe("Name of the filter"),
-      filterIndex: z.number().min(0).describe("New index position of the filter")
+      title: "Set Source Filter Index",
+      description: "Sets the index position of a filter on a source",
+      inputSchema: {
+        sourceName: z.string().describe("Name of the source the filter is on"),
+        filterName: z.string().describe("Name of the filter"),
+        filterIndex: z.number().min(0).describe("New index position of the filter")
+      },
+      annotations: { destructiveHint: false, idempotentHint: true },
     },
     async ({ sourceName, filterName, filterIndex }) => {
       try {
@@ -272,14 +303,18 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // SetSourceFilterSettings tool
-  server.tool(
+  server.registerTool(
     "obs-set-source-filter-settings",
-    "Sets the settings of a source filter",
     {
-      sourceName: z.string().describe("Name of the source the filter is on"),
-      filterName: z.string().describe("Name of the filter to set the settings of"),
-      filterSettings: z.record(z.any()).describe("Object of settings to apply"),
-      overlay: z.boolean().optional().describe("True to apply settings on top of existing ones, False to reset to defaults first")
+      title: "Set Source Filter Settings",
+      description: "Sets the settings of a source filter",
+      inputSchema: {
+        sourceName: z.string().describe("Name of the source the filter is on"),
+        filterName: z.string().describe("Name of the filter to set the settings of"),
+        filterSettings: z.record(z.any()).describe("Object of settings to apply"),
+        overlay: z.boolean().optional().describe("True to apply settings on top of existing ones, False to reset to defaults first")
+      },
+      annotations: { destructiveHint: false, idempotentHint: true },
     },
     async ({ sourceName, filterName, filterSettings, overlay }) => {
       try {
@@ -312,13 +347,17 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // SetSourceFilterEnabled tool
-  server.tool(
+  server.registerTool(
     "obs-set-source-filter-enabled",
-    "Sets the enable state of a source filter",
     {
-      sourceName: z.string().describe("Name of the source the filter is on"),
-      filterName: z.string().describe("Name of the filter"),
-      filterEnabled: z.boolean().describe("New enable state of the filter")
+      title: "Set Source Filter Enabled",
+      description: "Sets the enable state of a source filter",
+      inputSchema: {
+        sourceName: z.string().describe("Name of the source the filter is on"),
+        filterName: z.string().describe("Name of the filter"),
+        filterEnabled: z.boolean().describe("New enable state of the filter")
+      },
+      annotations: { destructiveHint: false, idempotentHint: true },
     },
     async ({ sourceName, filterName, filterEnabled }) => {
       try {

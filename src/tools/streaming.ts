@@ -4,10 +4,13 @@ import { z } from "zod";
 
 export async function initialize(server: McpServer, client: OBSWebSocketClient): Promise<void> {
   // GetStreamStatus tool
-  server.tool(
+  server.registerTool(
     "obs-get-stream-status",
-    "Get the current streaming status",
-    {},
+    {
+      title: "Get Stream Status",
+      description: "Get the current streaming status",
+      annotations: { readOnlyHint: true },
+    },
     async () => {
       try {
         const status = await client.sendRequest("GetStreamStatus");
@@ -34,10 +37,13 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // StartStream tool
-  server.tool(
+  server.registerTool(
     "obs-start-stream",
-    "Start streaming in OBS",
-    {},
+    {
+      title: "Start Stream",
+      description: "Start streaming in OBS",
+      annotations: { destructiveHint: false, idempotentHint: false },
+    },
     async () => {
       try {
         await client.sendRequest("StartStream");
@@ -64,10 +70,13 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // StopStream tool
-  server.tool(
+  server.registerTool(
     "obs-stop-stream",
-    "Stop streaming in OBS",
-    {},
+    {
+      title: "Stop Stream",
+      description: "Stop streaming in OBS",
+      annotations: { destructiveHint: false, idempotentHint: true },
+    },
     async () => {
       try {
         await client.sendRequest("StopStream");
@@ -94,10 +103,13 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // ToggleStream tool
-  server.tool(
+  server.registerTool(
     "obs-toggle-stream",
-    "Toggle the streaming state in OBS",
-    {},
+    {
+      title: "Toggle Stream",
+      description: "Toggle the streaming state in OBS",
+      annotations: { destructiveHint: false, idempotentHint: false },
+    },
     async () => {
       try {
         const response = await client.sendRequest("ToggleStream");
@@ -124,11 +136,15 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // SendStreamCaption tool
-  server.tool(
+  server.registerTool(
     "obs-send-stream-caption",
-    "Sends CEA-608 caption text over the stream output",
     {
-      captionText: z.string().describe("Caption text to send")
+      title: "Send Stream Caption",
+      description: "Sends CEA-608 caption text over the stream output",
+      inputSchema: {
+        captionText: z.string().describe("Caption text to send")
+      },
+      annotations: { destructiveHint: false, idempotentHint: false },
     },
     async ({ captionText }) => {
       try {

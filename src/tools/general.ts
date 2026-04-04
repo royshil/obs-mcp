@@ -1,21 +1,27 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { OBSWebSocketClient } from "../client.js";
 import { z } from "zod";
+import { createRequire } from "module";
+
+const { version } = createRequire(import.meta.url)("../../package.json");
 
 export async function initialize(server: McpServer, client: OBSWebSocketClient): Promise<void> {
   // Get server status
-  server.tool(
+  server.registerTool(
     "obs-get-status",
-    "Get the current status of the OBS MCP server and OBS connection",
-    {},
+    {
+      title: "OBS Server Status",
+      description: "Get the current status of the OBS MCP server and OBS connection",
+      annotations: { readOnlyHint: true },
+    },
     async () => {
       const status = client.getConnectionStatus();
       const obsConnected = client.isConnected();
-      
+
       const statusInfo = {
         server: {
           name: "obs-mcp",
-          version: "1.0.1",
+          version,
           status: "running"
         },
         obs: {
@@ -26,7 +32,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
         },
         timestamp: new Date().toISOString()
       };
-      
+
       return {
         content: [
           {
@@ -39,10 +45,13 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // Get OBS version info
-  server.tool(
+  server.registerTool(
     "obs-get-version",
-    "Get OBS Studio version information",
-    {},
+    {
+      title: "OBS Version Info",
+      description: "Get OBS Studio version information",
+      annotations: { readOnlyHint: true },
+    },
     async () => {
       if (!client.isConnected()) {
         return {
@@ -55,7 +64,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
           isError: true
         };
       }
-      
+
       try {
         const version = await client.sendRequest("GetVersion");
         return {
@@ -81,10 +90,13 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // Test OBS connection
-  server.tool(
+  server.registerTool(
     "obs-test-connection",
-    "Test the connection to OBS WebSocket",
-    {},
+    {
+      title: "Test OBS Connection",
+      description: "Test the connection to OBS WebSocket",
+      annotations: { readOnlyHint: true },
+    },
     async () => {
       if (!client.isConnected()) {
         return {
@@ -97,7 +109,7 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
           isError: true
         };
       }
-      
+
       try {
         // Try a simple request to test the connection
         await client.sendRequest("GetVersion");
@@ -124,10 +136,13 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // GetStats tool
-  server.tool(
+  server.registerTool(
     "obs-get-stats",
-    "Gets statistics about OBS, obs-websocket, and the current session",
-    {},
+    {
+      title: "OBS Statistics",
+      description: "Gets statistics about OBS, obs-websocket, and the current session",
+      annotations: { readOnlyHint: true },
+    },
     async () => {
       try {
         const stats = await client.sendRequest("GetStats");
@@ -154,11 +169,15 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // BroadcastCustomEvent tool
-  server.tool(
+  server.registerTool(
     "obs-broadcast-custom-event",
-    "Broadcasts a CustomEvent to all WebSocket clients",
     {
-      eventData: z.record(z.any()).describe("Data payload to emit to all receivers")
+      title: "Broadcast Custom Event",
+      description: "Broadcasts a CustomEvent to all WebSocket clients",
+      inputSchema: {
+        eventData: z.record(z.any()).describe("Data payload to emit to all receivers")
+      },
+      annotations: { destructiveHint: false, idempotentHint: false },
     },
     async ({ eventData }) => {
       try {
@@ -186,13 +205,17 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // CallVendorRequest tool
-  server.tool(
+  server.registerTool(
     "obs-call-vendor-request",
-    "Call a request registered to a vendor",
     {
-      vendorName: z.string().describe("Name of the vendor to use"),
-      requestType: z.string().describe("The request type to call"),
-      requestData: z.record(z.any()).optional().describe("Object containing appropriate request data")
+      title: "Call Vendor Request",
+      description: "Call a request registered to a vendor",
+      inputSchema: {
+        vendorName: z.string().describe("Name of the vendor to use"),
+        requestType: z.string().describe("The request type to call"),
+        requestData: z.record(z.any()).optional().describe("Object containing appropriate request data")
+      },
+      annotations: { destructiveHint: false, idempotentHint: false },
     },
     async ({ vendorName, requestType, requestData }) => {
       try {
@@ -200,11 +223,11 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
           vendorName,
           requestType
         };
-        
+
         if (requestData !== undefined) {
           params.requestData = requestData;
         }
-        
+
         const response = await client.sendRequest("CallVendorRequest", params);
         return {
           content: [
@@ -229,10 +252,13 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // GetHotkeyList tool
-  server.tool(
+  server.registerTool(
     "obs-get-hotkey-list",
-    "Gets an array of all hotkey names in OBS",
-    {},
+    {
+      title: "Get Hotkey List",
+      description: "Gets an array of all hotkey names in OBS",
+      annotations: { readOnlyHint: true },
+    },
     async () => {
       try {
         const hotkeyList = await client.sendRequest("GetHotkeyList");
@@ -259,21 +285,25 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // TriggerHotkeyByName tool
-  server.tool(
+  server.registerTool(
     "obs-trigger-hotkey-by-name",
-    "Triggers a hotkey using its name",
     {
-      hotkeyName: z.string().describe("Name of the hotkey to trigger"),
-      contextName: z.string().optional().describe("Name of context of the hotkey to trigger")
+      title: "Trigger Hotkey by Name",
+      description: "Triggers a hotkey using its name",
+      inputSchema: {
+        hotkeyName: z.string().describe("Name of the hotkey to trigger"),
+        contextName: z.string().optional().describe("Name of context of the hotkey to trigger")
+      },
+      annotations: { destructiveHint: false, idempotentHint: false },
     },
     async ({ hotkeyName, contextName }) => {
       try {
         const params: Record<string, any> = { hotkeyName };
-        
+
         if (contextName !== undefined) {
           params.contextName = contextName;
         }
-        
+
         await client.sendRequest("TriggerHotkeyByName", params);
         return {
           content: [
@@ -298,30 +328,34 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // TriggerHotkeyByKeySequence tool
-  server.tool(
+  server.registerTool(
     "obs-trigger-hotkey-by-key-sequence",
-    "Triggers a hotkey using a sequence of keys",
     {
-      keyId: z.string().optional().describe("The OBS key ID to use"),
-      keyModifiers: z.object({
-        shift: z.boolean().optional().describe("Press Shift"),
-        control: z.boolean().optional().describe("Press CTRL"),
-        alt: z.boolean().optional().describe("Press ALT"),
-        command: z.boolean().optional().describe("Press CMD (Mac)")
-      }).optional().describe("Object containing key modifiers to apply")
+      title: "Trigger Hotkey by Key Sequence",
+      description: "Triggers a hotkey using a sequence of keys",
+      inputSchema: {
+        keyId: z.string().optional().describe("The OBS key ID to use"),
+        keyModifiers: z.object({
+          shift: z.boolean().optional().describe("Press Shift"),
+          control: z.boolean().optional().describe("Press CTRL"),
+          alt: z.boolean().optional().describe("Press ALT"),
+          command: z.boolean().optional().describe("Press CMD (Mac)")
+        }).optional().describe("Object containing key modifiers to apply")
+      },
+      annotations: { destructiveHint: false, idempotentHint: false },
     },
     async ({ keyId, keyModifiers }) => {
       try {
         const params: Record<string, any> = {};
-        
+
         if (keyId !== undefined) {
           params.keyId = keyId;
         }
-        
+
         if (keyModifiers !== undefined) {
           params.keyModifiers = keyModifiers;
         }
-        
+
         await client.sendRequest("TriggerHotkeyByKeySequence", params);
         return {
           content: [
@@ -346,25 +380,29 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // Sleep tool
-  server.tool(
+  server.registerTool(
     "obs-sleep",
-    "Sleeps for a time duration or number of frames",
     {
-      sleepMillis: z.number().optional().describe("Number of milliseconds to sleep for"),
-      sleepFrames: z.number().optional().describe("Number of frames to sleep for")
+      title: "OBS Sleep",
+      description: "Sleeps for a time duration or number of frames",
+      inputSchema: {
+        sleepMillis: z.number().optional().describe("Number of milliseconds to sleep for"),
+        sleepFrames: z.number().optional().describe("Number of frames to sleep for")
+      },
+      annotations: { readOnlyHint: true },
     },
     async ({ sleepMillis, sleepFrames }) => {
       try {
         const params: Record<string, any> = {};
-        
+
         if (sleepMillis !== undefined) {
           params.sleepMillis = sleepMillis;
         }
-        
+
         if (sleepFrames !== undefined) {
           params.sleepFrames = sleepFrames;
         }
-        
+
         await client.sendRequest("Sleep", params);
         return {
           content: [

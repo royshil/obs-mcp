@@ -4,12 +4,16 @@ import { z } from "zod";
 
 export async function initialize(server: McpServer, client: OBSWebSocketClient): Promise<void> {
   // GetPersistentData tool
-  server.tool(
+  server.registerTool(
     "obs-get-persistent-data",
-    "Gets the value of a slot from the selected persistent data realm",
     {
-      realm: z.string().describe("The data realm to select. OBS_WEBSOCKET_DATA_REALM_GLOBAL or OBS_WEBSOCKET_DATA_REALM_PROFILE"),
-      slotName: z.string().describe("The name of the slot to retrieve data from")
+      title: "Get Persistent Data",
+      description: "Gets the value of a slot from the selected persistent data realm",
+      inputSchema: {
+        realm: z.string().describe("The data realm to select. OBS_WEBSOCKET_DATA_REALM_GLOBAL or OBS_WEBSOCKET_DATA_REALM_PROFILE"),
+        slotName: z.string().describe("The name of the slot to retrieve data from")
+      },
+      annotations: { readOnlyHint: true },
     },
     async ({ realm, slotName }) => {
       try {
@@ -37,13 +41,17 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // SetPersistentData tool
-  server.tool(
+  server.registerTool(
     "obs-set-persistent-data",
-    "Sets the value of a slot from the selected persistent data realm",
     {
-      realm: z.string().describe("The data realm to select. OBS_WEBSOCKET_DATA_REALM_GLOBAL or OBS_WEBSOCKET_DATA_REALM_PROFILE"),
-      slotName: z.string().describe("The name of the slot to set data for"),
-      slotValue: z.any().describe("The value to apply to the slot")
+      title: "Set Persistent Data",
+      description: "Sets the value of a slot from the selected persistent data realm",
+      inputSchema: {
+        realm: z.string().describe("The data realm to select. OBS_WEBSOCKET_DATA_REALM_GLOBAL or OBS_WEBSOCKET_DATA_REALM_PROFILE"),
+        slotName: z.string().describe("The name of the slot to set data for"),
+        slotValue: z.any().describe("The value to apply to the slot")
+      },
+      annotations: { destructiveHint: false, idempotentHint: true },
     },
     async ({ realm, slotName, slotValue }) => {
       try {
@@ -71,10 +79,13 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // GetSceneCollectionList tool
-  server.tool(
+  server.registerTool(
     "obs-get-scene-collection-list",
-    "Gets an array of all scene collections",
-    {},
+    {
+      title: "Get Scene Collection List",
+      description: "Gets an array of all scene collections",
+      annotations: { readOnlyHint: true },
+    },
     async () => {
       try {
         const response = await client.sendRequest("GetSceneCollectionList");
@@ -101,11 +112,15 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // SetCurrentSceneCollection tool
-  server.tool(
+  server.registerTool(
     "obs-set-current-scene-collection",
-    "Switches to a scene collection",
     {
-      sceneCollectionName: z.string().describe("Name of the scene collection to switch to")
+      title: "Set Current Scene Collection",
+      description: "Switches to a scene collection",
+      inputSchema: {
+        sceneCollectionName: z.string().describe("Name of the scene collection to switch to")
+      },
+      annotations: { destructiveHint: false, idempotentHint: true },
     },
     async ({ sceneCollectionName }) => {
       try {
@@ -133,11 +148,15 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // CreateSceneCollection tool
-  server.tool(
+  server.registerTool(
     "obs-create-scene-collection",
-    "Creates a new scene collection, switching to it in the process",
     {
-      sceneCollectionName: z.string().describe("Name for the new scene collection")
+      title: "Create Scene Collection",
+      description: "Creates a new scene collection, switching to it in the process",
+      inputSchema: {
+        sceneCollectionName: z.string().describe("Name for the new scene collection")
+      },
+      annotations: { destructiveHint: false, idempotentHint: false },
     },
     async ({ sceneCollectionName }) => {
       try {
@@ -165,10 +184,13 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // GetProfileList tool
-  server.tool(
+  server.registerTool(
     "obs-get-profile-list",
-    "Gets an array of all profiles",
-    {},
+    {
+      title: "Get Profile List",
+      description: "Gets an array of all profiles",
+      annotations: { readOnlyHint: true },
+    },
     async () => {
       try {
         const response = await client.sendRequest("GetProfileList");
@@ -195,11 +217,15 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // SetCurrentProfile tool
-  server.tool(
+  server.registerTool(
     "obs-set-current-profile",
-    "Switches to a profile",
     {
-      profileName: z.string().describe("Name of the profile to switch to")
+      title: "Set Current Profile",
+      description: "Switches to a profile",
+      inputSchema: {
+        profileName: z.string().describe("Name of the profile to switch to")
+      },
+      annotations: { destructiveHint: false, idempotentHint: true },
     },
     async ({ profileName }) => {
       try {
@@ -227,11 +253,15 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // CreateProfile tool
-  server.tool(
+  server.registerTool(
     "obs-create-profile",
-    "Creates a new profile, switching to it in the process",
     {
-      profileName: z.string().describe("Name for the new profile")
+      title: "Create Profile",
+      description: "Creates a new profile, switching to it in the process",
+      inputSchema: {
+        profileName: z.string().describe("Name for the new profile")
+      },
+      annotations: { destructiveHint: false, idempotentHint: false },
     },
     async ({ profileName }) => {
       try {
@@ -259,11 +289,15 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // RemoveProfile tool
-  server.tool(
+  server.registerTool(
     "obs-remove-profile",
-    "Removes a profile. If the current profile is chosen, it will change to a different profile first",
     {
-      profileName: z.string().describe("Name of the profile to remove")
+      title: "Remove Profile",
+      description: "Removes a profile. If the current profile is chosen, it will change to a different profile first",
+      inputSchema: {
+        profileName: z.string().describe("Name of the profile to remove")
+      },
+      annotations: { destructiveHint: true, idempotentHint: true },
     },
     async ({ profileName }) => {
       try {
@@ -291,12 +325,16 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // GetProfileParameter tool
-  server.tool(
+  server.registerTool(
     "obs-get-profile-parameter",
-    "Gets a parameter from the current profile's configuration",
     {
-      parameterCategory: z.string().describe("Category of the parameter to get"),
-      parameterName: z.string().describe("Name of the parameter to get")
+      title: "Get Profile Parameter",
+      description: "Gets a parameter from the current profile's configuration",
+      inputSchema: {
+        parameterCategory: z.string().describe("Category of the parameter to get"),
+        parameterName: z.string().describe("Name of the parameter to get")
+      },
+      annotations: { readOnlyHint: true },
     },
     async ({ parameterCategory, parameterName }) => {
       try {
@@ -324,13 +362,17 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // SetProfileParameter tool
-  server.tool(
+  server.registerTool(
     "obs-set-profile-parameter",
-    "Sets the value of a parameter in the current profile's configuration",
     {
-      parameterCategory: z.string().describe("Category of the parameter to set"),
-      parameterName: z.string().describe("Name of the parameter to set"),
-      parameterValue: z.string().nullable().describe("Value of the parameter to set. Use null to delete")
+      title: "Set Profile Parameter",
+      description: "Sets the value of a parameter in the current profile's configuration",
+      inputSchema: {
+        parameterCategory: z.string().describe("Category of the parameter to set"),
+        parameterName: z.string().describe("Name of the parameter to set"),
+        parameterValue: z.string().nullable().describe("Value of the parameter to set. Use null to delete")
+      },
+      annotations: { destructiveHint: false, idempotentHint: true },
     },
     async ({ parameterCategory, parameterName, parameterValue }) => {
       try {
@@ -358,10 +400,13 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // GetVideoSettings tool
-  server.tool(
+  server.registerTool(
     "obs-get-video-settings",
-    "Gets the current video settings",
-    {},
+    {
+      title: "Get Video Settings",
+      description: "Gets the current video settings",
+      annotations: { readOnlyHint: true },
+    },
     async () => {
       try {
         const response = await client.sendRequest("GetVideoSettings");
@@ -388,16 +433,20 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // SetVideoSettings tool
-  server.tool(
+  server.registerTool(
     "obs-set-video-settings",
-    "Sets the current video settings",
     {
-      fpsNumerator: z.number().min(1).optional().describe("Numerator of the fractional FPS value"),
-      fpsDenominator: z.number().min(1).optional().describe("Denominator of the fractional FPS value"),
-      baseWidth: z.number().min(1).max(4096).optional().describe("Width of the base (canvas) resolution in pixels"),
-      baseHeight: z.number().min(1).max(4096).optional().describe("Height of the base (canvas) resolution in pixels"),
-      outputWidth: z.number().min(1).max(4096).optional().describe("Width of the output resolution in pixels"),
-      outputHeight: z.number().min(1).max(4096).optional().describe("Height of the output resolution in pixels")
+      title: "Set Video Settings",
+      description: "Sets the current video settings",
+      inputSchema: {
+        fpsNumerator: z.number().min(1).optional().describe("Numerator of the fractional FPS value"),
+        fpsDenominator: z.number().min(1).optional().describe("Denominator of the fractional FPS value"),
+        baseWidth: z.number().min(1).max(4096).optional().describe("Width of the base (canvas) resolution in pixels"),
+        baseHeight: z.number().min(1).max(4096).optional().describe("Height of the base (canvas) resolution in pixels"),
+        outputWidth: z.number().min(1).max(4096).optional().describe("Width of the output resolution in pixels"),
+        outputHeight: z.number().min(1).max(4096).optional().describe("Height of the output resolution in pixels")
+      },
+      annotations: { destructiveHint: false, idempotentHint: true },
     },
     async (params) => {
       try {
@@ -434,10 +483,13 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // GetStreamServiceSettings tool
-  server.tool(
+  server.registerTool(
     "obs-get-stream-service-settings",
-    "Gets the current stream service settings",
-    {},
+    {
+      title: "Get Stream Service Settings",
+      description: "Gets the current stream service settings",
+      annotations: { readOnlyHint: true },
+    },
     async () => {
       try {
         const response = await client.sendRequest("GetStreamServiceSettings");
@@ -464,12 +516,16 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // SetStreamServiceSettings tool
-  server.tool(
+  server.registerTool(
     "obs-set-stream-service-settings",
-    "Sets the current stream service settings",
     {
-      streamServiceType: z.string().describe("Type of stream service to apply. Example: rtmp_common or rtmp_custom"),
-      streamServiceSettings: z.record(z.any()).describe("Settings to apply to the service")
+      title: "Set Stream Service Settings",
+      description: "Sets the current stream service settings",
+      inputSchema: {
+        streamServiceType: z.string().describe("Type of stream service to apply. Example: rtmp_common or rtmp_custom"),
+        streamServiceSettings: z.record(z.any()).describe("Settings to apply to the service")
+      },
+      annotations: { destructiveHint: false, idempotentHint: true },
     },
     async ({ streamServiceType, streamServiceSettings }) => {
       try {
@@ -497,10 +553,13 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // GetRecordDirectory tool
-  server.tool(
+  server.registerTool(
     "obs-get-record-directory",
-    "Gets the current directory that the record output is set to",
-    {},
+    {
+      title: "Get Record Directory",
+      description: "Gets the current directory that the record output is set to",
+      annotations: { readOnlyHint: true },
+    },
     async () => {
       try {
         const response = await client.sendRequest("GetRecordDirectory");
@@ -527,11 +586,15 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // SetRecordDirectory tool
-  server.tool(
+  server.registerTool(
     "obs-set-record-directory",
-    "Sets the current directory that the record output writes files to",
     {
-      recordDirectory: z.string().describe("Output directory")
+      title: "Set Record Directory",
+      description: "Sets the current directory that the record output writes files to",
+      inputSchema: {
+        recordDirectory: z.string().describe("Output directory")
+      },
+      annotations: { destructiveHint: false, idempotentHint: true },
     },
     async ({ recordDirectory }) => {
       try {

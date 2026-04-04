@@ -4,11 +4,15 @@ import { z } from "zod";
 
 export async function initialize(server: McpServer, client: OBSWebSocketClient): Promise<void> {
   // GetMediaInputStatus tool
-  server.tool(
+  server.registerTool(
     "obs-get-media-input-status",
-    "Gets the status of a media input",
     {
-      inputName: z.string().describe("Name of the media input")
+      title: "Get Media Input Status",
+      description: "Gets the status of a media input",
+      inputSchema: {
+        inputName: z.string().describe("Name of the media input")
+      },
+      annotations: { readOnlyHint: true },
     },
     async ({ inputName }) => {
       try {
@@ -36,12 +40,16 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // SetMediaInputCursor tool
-  server.tool(
+  server.registerTool(
     "obs-set-media-input-cursor",
-    "Sets the cursor position of a media input",
     {
-      inputName: z.string().describe("Name of the media input"),
-      mediaCursor: z.number().min(0).describe("New cursor position to set (in milliseconds)")
+      title: "Set Media Input Cursor",
+      description: "Sets the cursor position of a media input",
+      inputSchema: {
+        inputName: z.string().describe("Name of the media input"),
+        mediaCursor: z.number().min(0).describe("New cursor position to set (in milliseconds)")
+      },
+      annotations: { destructiveHint: false, idempotentHint: true },
     },
     async ({ inputName, mediaCursor }) => {
       try {
@@ -69,12 +77,16 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // OffsetMediaInputCursor tool
-  server.tool(
+  server.registerTool(
     "obs-offset-media-input-cursor",
-    "Offsets the current cursor position of a media input",
     {
-      inputName: z.string().describe("Name of the media input"),
-      mediaCursorOffset: z.number().describe("Value to offset the current cursor position by (in milliseconds)")
+      title: "Offset Media Input Cursor",
+      description: "Offsets the current cursor position of a media input",
+      inputSchema: {
+        inputName: z.string().describe("Name of the media input"),
+        mediaCursorOffset: z.number().describe("Value to offset the current cursor position by (in milliseconds)")
+      },
+      annotations: { destructiveHint: false, idempotentHint: false },
     },
     async ({ inputName, mediaCursorOffset }) => {
       try {
@@ -102,19 +114,23 @@ export async function initialize(server: McpServer, client: OBSWebSocketClient):
   );
 
   // TriggerMediaInputAction tool
-  server.tool(
+  server.registerTool(
     "obs-trigger-media-input-action",
-    "Triggers an action on a media input",
     {
-      inputName: z.string().describe("Name of the media input"),
-      mediaAction: z.enum([
-        "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_PLAY",
-        "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_PAUSE",
-        "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_STOP",
-        "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART",
-        "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_NEXT",
-        "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_PREVIOUS"
-      ]).describe("Action to trigger (PLAY, PAUSE, STOP, RESTART, NEXT, PREVIOUS)")
+      title: "Trigger Media Input Action",
+      description: "Triggers an action on a media input",
+      inputSchema: {
+        inputName: z.string().describe("Name of the media input"),
+        mediaAction: z.enum([
+          "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_PLAY",
+          "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_PAUSE",
+          "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_STOP",
+          "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART",
+          "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_NEXT",
+          "OBS_WEBSOCKET_MEDIA_INPUT_ACTION_PREVIOUS"
+        ]).describe("Action to trigger (PLAY, PAUSE, STOP, RESTART, NEXT, PREVIOUS)")
+      },
+      annotations: { destructiveHint: false, idempotentHint: false },
     },
     async ({ inputName, mediaAction }) => {
       try {

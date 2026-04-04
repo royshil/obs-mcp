@@ -1,0 +1,55 @@
+{
+  "manifest_version": "0.3",
+  "name": "obs-mcp",
+  "display_name": "OBS Studio",
+  "description": "Control OBS Studio via MCP — manage scenes, sources, recording, streaming and more",
+  "long_description": "Connects Claude to OBS Studio through the OBS WebSocket protocol (v5). Allows you to control scenes, sources, recording, streaming, filters, transitions, and other OBS features directly from Claude.\n\n**Requirements:**\n- OBS Studio 28+ with WebSocket Server enabled (`Tools → WebSocket Server Settings`)",
+  "icon": "icon.png",
+  "author": {
+    "name": "Roy Shilkrot",
+    "url": "https://github.com/royshil"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/royshil/obs-mcp"
+  },
+  "homepage": "https://github.com/royshil/obs-mcp",
+  "documentation": "https://github.com/royshil/obs-mcp#readme",
+  "support": "https://github.com/royshil/obs-mcp/issues",
+  "license": "MIT",
+  "keywords": ["obs", "streaming", "recording", "video", "broadcast", "scenes"],
+  "compatibility": {
+    "platforms": ["darwin", "win32", "linux"],
+    "runtimes": {
+      "node": ">=20.0.0"
+    }
+  },
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/server/index.js"],
+      "env": {
+        "OBS_WEBSOCKET_URL": "${user_config.obs_websocket_url}",
+        "OBS_WEBSOCKET_PASSWORD": "${user_config.obs_websocket_password}"
+      }
+    }
+  },
+  "user_config": {
+    "obs_websocket_url": {
+      "type": "string",
+      "title": "OBS WebSocket URL",
+      "description": "WebSocket URL for OBS Studio. Configure in OBS: Tools → WebSocket Server Settings",
+      "required": false,
+      "default": "ws://localhost:4455"
+    },
+    "obs_websocket_password": {
+      "type": "string",
+      "title": "OBS WebSocket Password",
+      "description": "Password from OBS WebSocket Server Settings. Leave empty if authentication is disabled.",
+      "required": false,
+      "sensitive": true
+    }
+  }
+}
