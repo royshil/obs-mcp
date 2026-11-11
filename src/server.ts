@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { OBSWebSocketClient } from "./client.js";
 import * as tools from "./tools/index.js";
+import { enableOnDemandConnection, readOnDemandOptions } from "./on-demand.js";
 
 // Create the OBS WebSocket client
 const obsClient = new OBSWebSocketClient(
@@ -14,6 +15,10 @@ export const server = new McpServer({
   name: "obs-mcp",
   version: "1.0.0",
 });
+
+// "auto" (default): connect at startup and keep retrying in the background.
+// "on-demand": stay idle and connect only when a tool is called.
+const CONNECTION_MODE = process.env.OBS_CONNECTION_MODE === "on-demand" ? "on-demand" : "auto";
 
 export let serverConnected = false;
 export let obsConnected = false;
@@ -123,6 +128,10 @@ function startConnectionCheckTimer(): void {
 // Set up server startup logic
 export async function startServer() {
   try {
+    if (CONNECTION_MODE === "on-demand") {
+      enableOnDemandConnection(server, obsClient, readOnDemandOptions());
+    }
+
     // Initialize all tools with the OBS client
     await tools.initialize(server, obsClient);
     logger.log("Initialized MCP tools");
@@ -134,11 +143,13 @@ export async function startServer() {
 
     serverConnected = true;
 
-    // Try to connect to OBS WebSocket (but don't fail if it's not available)
-    await attemptOBSConnection();
+    if (CONNECTION_MODE === "auto") {
+      // Try to connect to OBS WebSocket (but don't fail if it's not available)
+      await attemptOBSConnection();
 
-    // Start the periodic connection check timer
-    startConnectionCheckTimer();
+      // Start the periodic connection check timer
+      startConnectionCheckTimer();
+    }
 
     // Set up graceful shutdown
     process.on("SIGINT", handleShutdown);
@@ -147,7 +158,9 @@ export async function startServer() {
     logger.log("Server startup complete");
     
     // Log connection status
-    if (obsConnected) {
+    if (CONNECTION_MODE === "on-demand") {
+      logger.log("OBS WebSocket: on-demand mode, will connect when a tool is called");
+    } else if (obsConnected) {
       logger.log("✅ OBS WebSocket: Connected");
     } else {
       logger.log("❌ OBS WebSocket: Disconnected (will retry automatically)");

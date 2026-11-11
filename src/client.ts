@@ -173,7 +173,8 @@ export class OBSWebSocketClient extends EventEmitter {
           reject(error);
         });
 
-        // Set up the identification process
+        // Set up the identification process (dropping handlers left by failed attempts)
+        this.removeAllListeners('hello');
         this.once('hello', async (hello: HelloMessage['d']) => {
           try {
             await this.identify(hello);
